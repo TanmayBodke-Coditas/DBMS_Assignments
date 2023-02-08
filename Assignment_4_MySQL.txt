@@ -1,0 +1,206 @@
+﻿Q.2 
+
+
+1. mysql> create table Customers(id int primary key, name varchar(50), age int, address varchar(100), salary int);
+Query OK, 0 rows affected (0.08 sec)
+
+
+2. mysql> create table Orders(O_id int primary key, o_date date, customer_id int, amount int);
+Query OK, 0 rows affected (0.03 sec)
+
+
+3. mysql> insert into customers values(1, "Tanmay", 21, "Pune", 200000),
+    -> (2, "Aniket", 21, "Pune", 30000),
+    -> (3, "Sujan", 35, "Nanded", 100000),
+    -> (4, "Yash", 29, "Aagra", 780000),
+    -> (5, "Mrunamayi", 23, "Pune", 700000);
+Query OK, 5 rows affected (0.03 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+
+mysql> insert into orders values(101, "2022-12-01", 1, 900),
+    -> (102, "2022-12-03", 4, 4000),
+    -> (103, "2022-12-04", 1, 4500),
+    -> (104, "2022-12-04", 2, 3900),
+    -> (105, "2022-12-06", 5, 78);
+Query OK, 5 rows affected (0.01 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+
+4. mysql> select customers.id, customers.name, Orders.amount, Orders.o_date from Customers
+    -> inner join orders
+    -> on customers.id = orders.customer_id;
++----+-----------+--------+------------+
+| id | name      | amount | o_date     |
++----+-----------+--------+------------+
+|  1 | Tanmay    |    900 | 2022-12-01 |
+|  4 | Yash      |   4000 | 2022-12-03 |
+|  1 | Tanmay    |   4500 | 2022-12-04 |
+|  2 | Aniket    |   3900 | 2022-12-04 |
+|  5 | Mrunamayi |     78 | 2022-12-06 |
++----+-----------+--------+------------+
+5 rows in set (0.01 sec)
+
+
+5.  select customers.id, customers.name, Orders.amount, Orders.o_date from Customers
+    -> left join orders
+    -> on customers.id = orders.customer_id;
++----+-----------+--------+------------+
+| id | name      | amount | o_date     |
++----+-----------+--------+------------+
+|  1 | Tanmay    |   4500 | 2022-12-04 |
+|  1 | Tanmay    |    900 | 2022-12-01 |
+|  2 | Aniket    |   3900 | 2022-12-04 |
+|  3 | Sujan     |   NULL | NULL       |
+|  4 | Yash      |   4000 | 2022-12-03 |
+|  5 | Mrunamayi |     78 | 2022-12-06 |
++----+-----------+--------+------------+
+6 rows in set (0.01 sec)
+
+
+6. mysql> select customers.id, customers.name, Orders.amount, Orders.o_date from Customers
+    -> right join orders
+    -> on customers.id = orders.customer_id;
++------+-----------+--------+------------+
+| id   | name      | amount | o_date     |
++------+-----------+--------+------------+
+|    1 | Tanmay    |    900 | 2022-12-01 |
+|    4 | Yash      |   4000 | 2022-12-03 |
+|    1 | Tanmay    |   4500 | 2022-12-04 |
+|    2 | Aniket    |   3900 | 2022-12-04 |
+|    5 | Mrunamayi |     78 | 2022-12-06 |
++------+-----------+--------+------------+
+5 rows in set (0.00 sec)
+
+
+7. MySQL does not support Full outer join. We can use the union of left and right join.
+        
+        mysql> select customers.id, customers.name, Orders.amount, Orders.o_date from Customers
+    -> left join orders
+    -> on customers.id = orders.customer_id
+    -> union all
+    -> select customers.id, customers.name, Orders.amount, Orders.o_date from Customers
+    -> right join orders
+    -> on customers.id = orders.customer_id;
++------+-----------+--------+------------+
+| id   | name      | amount | o_date     |
++------+-----------+--------+------------+
+|    1 | Tanmay    |   4500 | 2022-12-04 |
+|    1 | Tanmay    |    900 | 2022-12-01 |
+|    2 | Aniket    |   3900 | 2022-12-04 |
+|    5 | Mrunamayi |     78 | 2022-12-06 |
+|    1 | Tanmay    |    900 | 2022-12-01 |
+| NULL | NULL      |   4000 | 2022-12-03 |
+|    1 | Tanmay    |   4500 | 2022-12-04 |
+|    2 | Aniket    |   3900 | 2022-12-04 |
+|    5 | Mrunamayi |     78 | 2022-12-06 |
++------+-----------+--------+------------+
+9 rows in set (0.01 sec)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+8. mysql> SELECT distinct A.name as name ,B.name AS Name2, A.address
+    -> FROM Customers A, Customers B
+    -> WHERE A.id <> B.id
+    -> AND A.address = B.address
+    -> ORDER BY A.address;
++-----------+-----------+---------+
+| name      | Name2     | address |
++-----------+-----------+---------+
+| Mrunamayi | Tanmay    | Pune    |
+| Aniket    | Tanmay    | Pune    |
+| Mrunamayi | Aniket    | Pune    |
+| Tanmay    | Aniket    | Pune    |
+| Aniket    | Mrunamayi | Pune    |
+| Tanmay    | Mrunamayi | Pune    |
++-----------+-----------+---------+
+6 rows in set (0.00 sec)
+
+
+
+
+9. mysql> select customers.id, customers.name, Orders.amount, Orders.o_date from Customers
+    -> cross join orders;
++----+-----------+--------+------------+
+| id | name      | amount | o_date     |
++----+-----------+--------+------------+
+|  5 | Mrunamayi |    900 | 2022-12-01 |
+|  4 | Yash      |    900 | 2022-12-01 |
+|  3 | Sujan     |    900 | 2022-12-01 |
+|  2 | Aniket    |    900 | 2022-12-01 |
+|  1 | Tanmay    |    900 | 2022-12-01 |
+|  5 | Mrunamayi |   4000 | 2022-12-03 |
+|  4 | Yash      |   4000 | 2022-12-03 |
+|  3 | Sujan     |   4000 | 2022-12-03 |
+|  2 | Aniket    |   4000 | 2022-12-03 |
+|  1 | Tanmay    |   4000 | 2022-12-03 |
+|  5 | Mrunamayi |   4500 | 2022-12-04 |
+|  4 | Yash      |   4500 | 2022-12-04 |
+|  3 | Sujan     |   4500 | 2022-12-04 |
+|  2 | Aniket    |   4500 | 2022-12-04 |
+|  1 | Tanmay    |   4500 | 2022-12-04 |
+|  5 | Mrunamayi |   3900 | 2022-12-04 |
+|  4 | Yash      |   3900 | 2022-12-04 |
+|  3 | Sujan     |   3900 | 2022-12-04 |
+|  2 | Aniket    |   3900 | 2022-12-04 |
+|  1 | Tanmay    |   3900 | 2022-12-04 |
+|  5 | Mrunamayi |     78 | 2022-12-06 |
+|  4 | Yash      |     78 | 2022-12-06 |
+|  3 | Sujan     |     78 | 2022-12-06 |
+|  2 | Aniket    |     78 | 2022-12-06 |
+|  1 | Tanmay    |     78 | 2022-12-06 |
++----+-----------+--------+------------+
+25 rows in set (0.00 sec)
+
+
+
+
+10. mysql> select * from customers where salary In(select salary from customers where salary > 20000);
++----+-----------+------+---------+--------+
+| id | name      | age  | address | salary |
++----+-----------+------+---------+--------+
+|  1 | Tanmay    |   21 | Pune    | 200000 |
+|  2 | Aniket    |   21 | Pune    |  30000 |
+|  3 | Sujan     |   35 | Nanded  | 100000 |
+|  4 | Yash      |   29 | Aagra   | 780000 |
+|  5 | Mrunamayi |   23 | Pune    | 700000 |
++----+-----------+------+---------+--------+
+5 rows in set (0.00 sec)
+
+
+
+
+11.  create table cust_bkp as select * from customers;
+
+
+12. UPDATE customers SET salary = salary + salary*0.1 where age In(select Age from cust_bkp WHERE age>24);
+Query OK, 2 rows affected (0.01 sec)
+Rows matched: 2  Changed: 2  Warnings: 0
+
+
+13. mysql> DELETE FROM customers
+    -> WHERE age In(
+    -> SELECT age FROM cust_bkp where age>26);
+Query OK, 2 rows affected (0.01 sec)
+
+
+mysql> select * from customers;
++----+-----------+------+---------+--------+
+| id | name      | age  | address | salary |
++----+-----------+------+---------+--------+
+|  1 | Tanmay    |   21 | Pune    | 200000 |
+|  2 | Aniket    |   21 | Pune    |  30000 |
+|  5 | Mrunamayi |   23 | Pune    | 700000 |
++----+-----------+------+---------+--------+
+3 rows in set (0.00 sec)
